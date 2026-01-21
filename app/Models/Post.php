@@ -34,7 +34,13 @@ class Post extends Model
     }
 
     public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
+	{
+		return $this->hasMany(Comment::class);
+	}
+
+	public function approvedComments()
+	{
+		return $this->hasMany(Comment::class)->where('status', 'approved');
+	}
+	
 }
