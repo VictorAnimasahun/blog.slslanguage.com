@@ -66,21 +66,32 @@ return new class extends Migration
         });
 
         Schema::create('comments', function (Blueprint $table) {
-            $table->id();
+			$table->id();
+			$table->foreignId('post_id')
+				->constrained()
+				->onDelete('cascade');          // When post is deleted → delete its comments
 
-            $table->foreignId('post_id')
-                ->constrained()
-                ->cascadeOnDelete();
+			$table->foreignId('user_id')
+				->nullable()                    // Allow NULL for guest comments
+				->constrained()
+				->onDelete('set null');         // If user is deleted → keep comment but set user_id to NULL
 
-            $table->foreignId('user_id')
-                ->constrained()
-                ->cascadeOnDelete();
+			// Guest comment fields (only filled when user_id is null)
+			$table->string('guest_name')->nullable();
+			$table->string('guest_email')->nullable();
 
-            $table->text('comment');
-            $table->string('status')->default('pending');
+			$table->text('content');            // Renamed from 'comment' → clearer name
+			$table->enum('status', ['pending', 'approved', 'spam'])->default('pending');
 
-            $table->timestamps();
-        });
+			$table->ipAddress('ip_address')->nullable();  // Track IP for spam/moderation
+
+			$table->timestamps();
+
+			// Performance indexes (very useful for blog with many comments)
+			$table->index('post_id');
+			$table->index('status');
+			$table->index('created_at');
+		});
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
