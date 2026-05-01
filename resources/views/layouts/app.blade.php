@@ -47,11 +47,23 @@
 
     <!-- Navigation -->
     <nav class="sls-nav">
-        <div class="max-w-6xl mx-auto px-4 flex gap-8">
+        <div class="max-w-6xl mx-auto px-4 flex gap-8 items-center">
             <a href="{{ route('blog.index') }}" class="text-white py-4 hover:bg-blue-600 px-3">Home</a>
             <a href="#" class="text-white py-4 hover:bg-blue-600 px-3">About</a>
             <a href="#" class="text-white py-4 hover:bg-blue-600 px-3">Contact</a>
-            <a href="#" class="text-white py-4 hover:bg-blue-600 px-3">Log in</a>
+            <div class="ml-auto flex gap-2">
+                @auth
+                    @if(auth()->user()->role === 'admin')
+                        <a href="{{ route('admin.dashboard') }}" class="text-white py-4 hover:bg-blue-600 px-3">Admin</a>
+                    @endif
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button class="text-white py-4 hover:bg-blue-600 px-3">Log out</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="text-white py-4 hover:bg-blue-600 px-3">Log in</a>
+                @endauth
+            </div>
         </div>
     </nav>
 
