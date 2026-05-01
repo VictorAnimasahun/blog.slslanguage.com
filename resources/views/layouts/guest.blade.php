@@ -1,30 +1,44 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', config('app.name', 'SLS Blog'))</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
-
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
-            </div>
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-gray-100 to-white py-5 border-b">
+        <div class="max-w-6xl mx-auto px-4 flex items-center gap-3">
+            <a href="{{ route('blog.index') }}" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">SLS</div>
+                <div>
+                    <h1 class="text-xl font-bold leading-none">
+                        <span class="text-purple-500">SLS</span><span class="text-blue-500">BLOG</span>
+                    </h1>
+                    <p class="text-gray-500 text-xs">CRAFTING BRIGHTER FUTURES</p>
+                </div>
+            </a>
         </div>
-    </body>
+    </div>
+
+    <!-- Auth card -->
+    <div class="flex items-center justify-center min-h-[calc(100vh-80px)] py-10 px-4">
+        <div class="w-full max-w-md">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="h-1.5 bg-gradient-to-r from-purple-500 to-blue-500"></div>
+                <div class="p-8">
+                    {{ $slot }}
+                </div>
+            </div>
+            <p class="text-center text-xs text-gray-400 mt-4">
+                &copy; {{ date('Y') }} Scholarly Language Services
+            </p>
+        </div>
+    </div>
+
+</body>
 </html>

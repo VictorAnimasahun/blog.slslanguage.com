@@ -1,5 +1,9 @@
 @extends('admin.layout')
 
+@push('head')
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+@endpush
+
 @section('title', 'Edit Post')
 
 @section('content')
@@ -35,8 +39,8 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Content</label>
-                    <textarea name="content" rows="16"
-                              class="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono @error('content') border-red-400 @enderror">{{ old('content', $post->content) }}</textarea>
+                    <div id="quill-editor" class="bg-white" style="min-height: 320px;"></div>
+                    <textarea name="content" id="content-input" class="hidden @error('content') border-red-400 @enderror"></textarea>
                     @error('content')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
@@ -97,4 +101,29 @@
 
     </div>
 </form>
+@push('scripts')
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+    const quill = new Quill('#quill-editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ header: [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['link'],
+                ['clean']
+            ]
+        }
+    });
+
+    quill.root.innerHTML = {!! json_encode(old('content', $post->content)) !!};
+
+    document.querySelector('form').addEventListener('submit', function () {
+        document.getElementById('content-input').value = quill.root.innerHTML;
+    });
+</script>
+@endpush
+
 @endsection

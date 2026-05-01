@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'SLS Blog')</title>
+    <title>@yield('title', 'SLS Blog') — Scholarly Language Services</title>
+    <meta name="description" content="@yield('meta_description', 'Language learning tips, IELTS prep, and educational resources from Scholarly Language Services.')">
+    <meta property="og:title" content="@yield('title', 'SLS Blog')">
+    <meta property="og:description" content="@yield('meta_description', 'Language learning tips, IELTS prep, and educational resources.')">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -56,6 +59,7 @@
                     @if(auth()->user()->role === 'admin')
                         <a href="{{ route('admin.dashboard') }}" class="text-white py-4 hover:bg-blue-600 px-3">Admin</a>
                     @endif
+                    <a href="{{ route('profile.edit') }}" class="text-white py-4 hover:bg-blue-600 px-3">My Account</a>
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
                         <button class="text-white py-4 hover:bg-blue-600 px-3">Log out</button>

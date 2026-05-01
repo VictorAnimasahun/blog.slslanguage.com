@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', $post->title)
+@section('meta_description', $post->excerpt ?? Str::limit(strip_tags($post->content), 155))
+
 @section('content')
 <div class="grid grid-cols-3 gap-8">
     <!-- Main Content -->

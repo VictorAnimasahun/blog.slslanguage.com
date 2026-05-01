@@ -6,6 +6,7 @@
     <title>@yield('title', 'Admin') — SLS Blog</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @stack('head')
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
@@ -39,6 +40,14 @@
                    class="flex items-center gap-3 px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('admin.posts*') ? 'bg-blue-600' : 'hover:bg-gray-700' }}">
                     <i class="fas fa-file-alt w-4"></i> Posts
                 </a>
+                <a href="{{ route('admin.users.index') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('admin.users*') ? 'bg-blue-600' : 'hover:bg-gray-700' }}">
+                    <i class="fas fa-users w-4"></i> Users
+                </a>
+                <a href="{{ route('admin.categories.index') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('admin.categories*') ? 'bg-blue-600' : 'hover:bg-gray-700' }}">
+                    <i class="fas fa-folder w-4"></i> Categories
+                </a>
                 <a href="{{ route('admin.comments.index') }}"
                    class="flex items-center gap-3 px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('admin.comments*') ? 'bg-blue-600' : 'hover:bg-gray-700' }}">
                     <i class="fas fa-comments w-4"></i> Comments
@@ -68,5 +77,6 @@
         </main>
     </div>
 
+@stack('scripts')
 </body>
 </html>
