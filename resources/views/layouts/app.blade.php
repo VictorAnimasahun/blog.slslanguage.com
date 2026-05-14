@@ -56,8 +56,8 @@
             <a href="#" class="text-white py-4 hover:bg-blue-600 px-3">Contact</a>
             <div class="ml-auto flex gap-2">
                 @auth
-                    @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('admin.dashboard') }}" class="text-white py-4 hover:bg-blue-600 px-3">Admin</a>
+                    @if(in_array(auth()->user()->role, ['admin', 'author']))
+                        <a href="{{ route('admin.dashboard') }}" class="text-white py-4 hover:bg-blue-600 px-3">Dashboard</a>
                     @endif
                     <a href="{{ route('profile.edit') }}" class="text-white py-4 hover:bg-blue-600 px-3">My Account</a>
                     <form method="POST" action="{{ route('logout') }}" class="inline">
