@@ -16,7 +16,7 @@ class PostController extends Controller
     {
         $user  = Auth::user();
         $posts = Post::with('author', 'category')
-            ->when($user->role === 'editor', fn($q) => $q->where('author_id', $user->id))
+            ->when($user->role === 'author', fn($q) => $q->where('author_id', $user->id))
             ->latest()
             ->paginate(20);
 
@@ -109,7 +109,7 @@ class PostController extends Controller
     private function authorizePost(Post $post): void
     {
         $user = Auth::user();
-        if ($user->role === 'editor' && $post->author_id !== $user->id) {
+        if ($user->role === 'author' && $post->author_id !== $user->id) {
             abort(403, 'You can only edit your own posts.');
         }
     }
