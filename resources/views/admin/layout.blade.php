@@ -40,6 +40,7 @@
                    class="flex items-center gap-3 px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('admin.posts*') ? 'bg-blue-600' : 'hover:bg-gray-700' }}">
                     <i class="fas fa-file-alt w-4"></i> Posts
                 </a>
+                @if(auth()->user()->role === 'admin')
                 <a href="{{ route('admin.users.index') }}"
                    class="flex items-center gap-3 px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('admin.users*') ? 'bg-blue-600' : 'hover:bg-gray-700' }}">
                     <i class="fas fa-users w-4"></i> Users
@@ -48,6 +49,7 @@
                    class="flex items-center gap-3 px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('admin.categories*') ? 'bg-blue-600' : 'hover:bg-gray-700' }}">
                     <i class="fas fa-folder w-4"></i> Categories
                 </a>
+                @endif
                 <a href="{{ route('admin.comments.index') }}"
                    class="flex items-center gap-3 px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('admin.comments*') ? 'bg-blue-600' : 'hover:bg-gray-700' }}">
                     <i class="fas fa-comments w-4"></i> Comments

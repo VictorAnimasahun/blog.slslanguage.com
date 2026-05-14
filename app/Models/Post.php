@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'title',
         'slug',
         'excerpt',
+        'featured_image',
         'content',
         'status',
         'published_at',
@@ -19,8 +23,8 @@ class Post extends Model
 
     protected $casts = [
         'published_at' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'created_at'   => 'datetime',
+        'updated_at'   => 'datetime',
     ];
 
     public function author()
@@ -34,13 +38,12 @@ class Post extends Model
     }
 
     public function comments()
-	{
-		return $this->hasMany(Comment::class);
-	}
+    {
+        return $this->hasMany(Comment::class);
+    }
 
-	public function approvedComments()
-	{
-		return $this->hasMany(Comment::class)->where('status', 'approved');
-	}
-	
+    public function approvedComments()
+    {
+        return $this->hasMany(Comment::class)->where('status', 'approved');
+    }
 }

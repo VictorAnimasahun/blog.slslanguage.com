@@ -7,7 +7,7 @@
     <meta name="description" content="@yield('meta_description', 'Language learning tips, IELTS prep, and educational resources from Scholarly Language Services.')">
     <meta property="og:title" content="@yield('title', 'SLS Blog')">
     <meta property="og:description" content="@yield('meta_description', 'Language learning tips, IELTS prep, and educational resources.')">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .sls-header {

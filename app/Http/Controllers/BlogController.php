@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class BlogController extends Controller
 {
-    /**
-     * Display a listing of published blog posts (home page).
-     */
     public function index()
     {
         $posts = Post::where('status', 'published')
@@ -20,14 +17,12 @@ class BlogController extends Controller
             ->paginate(10);
 
         $categories = Category::orderBy('name')->get();
+        $archives   = $this->getArchives();
 
-        return view('blog.index', compact('posts', 'categories'));
+        return view('blog.index', compact('posts', 'categories', 'archives'));
     }
 
-    /**
-     * Display a single published blog post with related posts and approved comments.
-     */
-    public function show($slug)
+    public function show(string $slug)
     {
         $post = Post::where('slug', $slug)
             ->where('status', 'published')
@@ -37,7 +32,7 @@ class BlogController extends Controller
         $relatedPosts = Post::where('category_id', $post->category_id)
             ->where('id', '!=', $post->id)
             ->where('status', 'published')
-            ->with('author')                  // Optional: load author if you display names in related posts
+            ->with('author')
             ->latest()
             ->take(5)
             ->get();
@@ -45,10 +40,7 @@ class BlogController extends Controller
         return view('blog.show', compact('post', 'relatedPosts'));
     }
 
-    /**
-     * Display posts filtered by category.
-     */
-    public function category($slug)
+    public function category(string $slug)
     {
         $category = Category::where('slug', $slug)->firstOrFail();
 
@@ -58,50 +50,12 @@ class BlogController extends Controller
             ->orderBy('published_at', 'desc')
             ->paginate(10);
 
-        return view('blog.category', compact('category', 'posts'));
+        $categories = Category::orderBy('name')->get();
+        $archives   = $this->getArchives();
+
+        return view('blog.category', compact('category', 'posts', 'categories', 'archives'));
     }
 
-    /**
-     * Store a new comment for a post (handles both authenticated users and guests).
-     */
-    public function storeComment(Request $request, $slug)
-    {
-        $post = Post::where('slug', $slug)
-            ->where('status', 'published')
-            ->firstOrFail();
-
-        // Optional future check (add a 'allow_comments' boolean column later if needed)
-        // if (!$post->allow_comments ?? true) {
-        //     return back()->with('error', 'Comments are disabled for this post.');
-        // }
-
-        $validated = $request->validate([
-            'content'     => 'required|min:10|max:2000',
-            'guest_name'  => 'required_without:user_id|string|max:100|nullable',
-            'guest_email' => 'required_without:user_id|email|max:100|nullable',
-        ], [
-            'content.min'               => 'Your comment should be at least 10 characters long.',
-            'guest_name.required_without'  => 'Please enter your name (required for guests).',
-            'guest_email.required_without' => 'Please enter a valid email (required for guests).',
-            'guest_email.email'         => 'Please provide a valid email address.',
-        ]);
-
-        // Create the comment using the relationship
-        $post->comments()->create([
-            'user_id'     => Auth::id(),                        // null if guest
-            'guest_name'  => $validated['guest_name']  ?? null,
-            'guest_email' => $validated['guest_email'] ?? null,
-            'content'     => $validated['content'],
-            'status'      => 'pending',
-            'ip_address'  => $request->ip(),
-        ]);
-
-        return back()->with('success', 'Thank you! Your comment has been submitted and is awaiting moderation.');
-    }
-
-    /**
-     * Optional: Search posts (if you want to keep/improve the search form)
-     */
     public function search(Request $request)
     {
         $query = $request->input('q');
@@ -117,8 +71,71 @@ class BlogController extends Controller
             ->paginate(10);
 
         $categories = Category::orderBy('name')->get();
+        $archives   = $this->getArchives();
 
-        return view('blog.index', compact('posts', 'categories'))
+        return view('blog.index', compact('posts', 'categories', 'archives'))
             ->with('searchQuery', $query);
+    }
+
+    public function archive($year, $month)
+    {
+        $posts = Post::where('status', 'published')
+            ->whereYear('published_at', $year)
+            ->whereMonth('published_at', $month)
+            ->with('author')
+            ->orderBy('published_at', 'desc')
+            ->paginate(10);
+
+        $categories = Category::orderBy('name')->get();
+        $archives   = $this->getArchives();
+        $archiveLabel = \Carbon\Carbon::createFromDate($year, $month, 1)->format('F Y');
+
+        return view('blog.index', compact('posts', 'categories', 'archives'))
+            ->with('searchQuery', $archiveLabel);
+    }
+
+    public function storeComment(Request $request, string $slug)
+    {
+        $post = Post::where('slug', $slug)
+            ->where('status', 'published')
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'content'     => 'required|min:10|max:2000',
+            'guest_name'  => 'required_without:user_id|string|max:100|nullable',
+            'guest_email' => 'required_without:user_id|email|max:100|nullable',
+        ], [
+            'content.min'                  => 'Your comment should be at least 10 characters long.',
+            'guest_name.required_without'  => 'Please enter your name (required for guests).',
+            'guest_email.required_without' => 'Please enter a valid email (required for guests).',
+            'guest_email.email'            => 'Please provide a valid email address.',
+        ]);
+
+        $post->comments()->create([
+            'user_id'     => Auth::id(),
+            'guest_name'  => $validated['guest_name']  ?? null,
+            'guest_email' => $validated['guest_email'] ?? null,
+            'content'     => $validated['content'],
+            'status'      => 'pending',
+            'ip_address'  => $request->ip(),
+        ]);
+
+        return back()->with('success', 'Thank you! Your comment has been submitted and is awaiting moderation.');
+    }
+
+    private function getArchives(): \Illuminate\Support\Collection
+    {
+        return Post::where('status', 'published')
+            ->whereNotNull('published_at')
+            ->orderByDesc('published_at')
+            ->get(['published_at'])
+            ->groupBy(fn($p) => $p->published_at->format('Y-m'))
+            ->map(fn($posts, $ym) => [
+                'label' => $posts->first()->published_at->format('F Y'),
+                'year'  => $posts->first()->published_at->format('Y'),
+                'month' => $posts->first()->published_at->format('m'),
+                'count' => $posts->count(),
+            ])
+            ->values();
     }
 }

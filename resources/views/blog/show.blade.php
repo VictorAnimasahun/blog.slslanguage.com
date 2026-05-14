@@ -6,7 +6,12 @@
 @section('content')
 <div class="grid grid-cols-3 gap-8">
     <!-- Main Content -->
-    <div class="col-span-2 bg-white p-8 rounded-lg shadow-sm">
+    <div class="col-span-2 bg-white rounded-lg shadow-sm overflow-hidden">
+        @if($post->featured_image)
+            <img src="{{ Storage::url($post->featured_image) }}" alt="{{ $post->title }}"
+                 class="w-full h-72 object-cover">
+        @endif
+        <div class="p-8">
         <h1 class="text-4xl font-bold mb-4">{{ $post->title }}</h1>
         
         <p class="text-gray-600 text-sm mb-8">
@@ -22,6 +27,7 @@
         <a href="{{ route('blog.index') }}" class="text-blue-600 hover:underline font-semibold">
             ← Back to Blog
         </a>
+        </div>
 
 		<!-- Comments Section -->
 		<div class="mt-12 bg-white rounded-lg shadow-md p-6">

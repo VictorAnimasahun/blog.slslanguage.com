@@ -8,7 +8,14 @@
         <!-- Main Content - Full width on mobile, 2 cols on desktop -->
         <div class="lg:col-span-2 order-2 lg:order-1">
             @forelse($posts as $post)
-                <div class="bg-white rounded-lg shadow-md p-6 mb-6 hover:shadow-lg transition-shadow">
+                <div class="bg-white rounded-lg shadow-md mb-6 hover:shadow-lg transition-shadow overflow-hidden">
+                    @if($post->featured_image)
+                        <a href="{{ route('blog.show', $post->slug) }}">
+                            <img src="{{ Storage::url($post->featured_image) }}" alt="{{ $post->title }}"
+                                 class="w-full h-48 object-cover">
+                        </a>
+                    @endif
+                    <div class="p-6">
                     <h2 class="text-xl md:text-2xl font-bold mb-3">
                         <a href="{{ route('blog.show', $post->slug) }}" class="text-gray-800 hover:text-blue-600">
                             {{ $post->title }}
@@ -24,10 +31,11 @@
                         {{ $post->excerpt ?? Str::limit(strip_tags($post->content), 200) }}
                     </p>
                     
-                    <a href="{{ route('blog.show', $post->slug) }}" 
+                    <a href="{{ route('blog.show', $post->slug) }}"
                        class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors text-sm md:text-base">
                         Read More <i class="fas fa-arrow-right ml-1"></i>
                     </a>
+                    </div>
                 </div>
             @empty
                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
@@ -62,8 +70,9 @@
             <!-- Categories Widget -->
             <div class="bg-white rounded-lg shadow-md p-4 md:p-6 mb-6">
                 <h3 class="section-title text-lg md:text-xl font-bold">Categories</h3>
-                <select class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base">
-                    <option>Select Category</option>
+                <select onchange="if(this.value) window.location='/category/'+this.value"
+                        class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base">
+                    <option value="">Select Category</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->slug }}">{{ $category->name }}</option>
                     @endforeach
@@ -73,12 +82,19 @@
             <!-- Archives Widget -->
             <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
                 <h3 class="section-title text-lg md:text-xl font-bold">Archives</h3>
-                <select class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base">
-                    <option>Select Month</option>
-                    <option>December 2024</option>
-                    <option>November 2024</option>
-                    <option>October 2024</option>
-                </select>
+                @if($archives->isEmpty())
+                    <p class="text-sm text-gray-400">No archives yet.</p>
+                @else
+                    <select onchange="if(this.value) window.location=this.value"
+                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base">
+                        <option value="">Select Month</option>
+                        @foreach($archives as $archive)
+                            <option value="{{ route('blog.archive', [$archive['year'], $archive['month']]) }}">
+                                {{ $archive['label'] }} ({{ $archive['count'] }})
+                            </option>
+                        @endforeach
+                    </select>
+                @endif
             </div>
 
         </div>
