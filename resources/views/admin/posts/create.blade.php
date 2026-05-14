@@ -14,7 +14,7 @@
     <h1 class="text-2xl font-bold text-gray-800">New Post</h1>
 </div>
 
-<form method="POST" action="{{ route('admin.posts.store') }}" enctype="multipart/form-data">
+<form id="post-form" method="POST" action="{{ route('admin.posts.store') }}" enctype="multipart/form-data">
     @csrf
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -43,7 +43,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Content</label>
-                    <div id="quill-editor" class="bg-white" style="min-height: 320px;">{{ old('content') }}</div>
+                    <div id="quill-editor" class="bg-white" style="min-height: 320px;">{!! old('content') !!}</div>
                     <textarea name="content" id="content-input" class="hidden @error('content') border-red-400 @enderror"></textarea>
                     @error('content')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -133,7 +133,7 @@
         }
     });
 
-    document.querySelector('form').addEventListener('submit', function () {
+    document.getElementById('post-form').addEventListener('submit', function () {
         document.getElementById('content-input').value = quill.root.innerHTML;
     });
 </script>

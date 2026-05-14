@@ -14,7 +14,7 @@
     <h1 class="text-2xl font-bold text-gray-800">Edit Post</h1>
 </div>
 
-<form method="POST" action="{{ route('admin.posts.update', $post) }}" enctype="multipart/form-data">
+<form id="post-form" method="POST" action="{{ route('admin.posts.update', $post) }}" enctype="multipart/form-data">
     @csrf @method('PUT')
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -158,7 +158,7 @@
     const savedContent = editorEl.getAttribute('data-content');
     quill.root.innerHTML = savedContent ? JSON.parse(savedContent) : '';
 
-    document.querySelector('form').addEventListener('submit', function () {
+    document.getElementById('post-form').addEventListener('submit', function () {
         document.getElementById('content-input').value = quill.root.innerHTML;
     });
 </script>
