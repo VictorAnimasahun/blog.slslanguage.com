@@ -28,6 +28,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'editor'])->group(fu
     // Admin + editor
     Route::get('/', [Admin\AdminController::class, 'dashboard'])->name('dashboard');
     Route::resource('posts', Admin\PostController::class);
+    Route::post('posts/upload-image', [Admin\PostController::class, 'uploadImage'])->name('posts.upload-image');
     Route::get('comments', [Admin\CommentController::class, 'index'])->name('comments.index');
     Route::patch('comments/{comment}/approve', [Admin\CommentController::class, 'approve'])->name('comments.approve');
     Route::patch('comments/{comment}/spam', [Admin\CommentController::class, 'spam'])->name('comments.spam');

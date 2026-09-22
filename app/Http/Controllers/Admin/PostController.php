@@ -57,6 +57,26 @@ class PostController extends Controller
         return redirect()->route('admin.posts.index')->with('success', 'Post created.');
     }
 
+    /**
+     * Quill's image button (create/edit views) uploads here instead of
+     * embedding the picked file as base64 straight into the post content.
+     * That used to be the actual "post creation keeps failing" bug: a single
+     * ~6MB photo, base64-encoded, alone exceeded post_max_size, and the whole
+     * request was rejected with a bare Apache 413 before Laravel -- and this
+     * validation -- ever ran, so nothing on the page explained why saving
+     * silently failed.
+     */
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|max:8192', // 8MB; comfortably under .user.ini's post_max_size
+        ]);
+
+        $path = $request->file('image')->store('posts/inline', 'public');
+
+        return response()->json(['url' => Storage::url($path)]);
+    }
+
     public function edit(Post $post)
     {
         $this->authorizePost($post);

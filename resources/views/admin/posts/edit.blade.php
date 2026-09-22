@@ -140,13 +140,38 @@
                         input.onchange = () => {
                             const file = input.files[0];
                             if (!file) return;
-                            const reader = new FileReader();
-                            reader.onload = e => {
-                                const range = quill.getSelection(true);
-                                quill.insertEmbed(range.index, 'image', e.target.result);
-                                quill.setSelection(range.index + 1);
-                            };
-                            reader.readAsDataURL(file);
+                            // Upload the file (see PostController::uploadImage) and embed
+                            // the returned URL -- NOT the file itself as base64. A base64
+                            // embed used to be able to blow past post_max_size on its own,
+                            // which failed the whole save with no visible explanation.
+                            const range = quill.getSelection(true);
+                            const placeholderId = 'img-upload-' + Date.now();
+                            const placeholderSvg = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+                                '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120"><rect width="200" height="120" fill="#f1f5f9"/><text x="100" y="64" font-size="13" text-anchor="middle" fill="#94a3b8" font-family="sans-serif">Uploading…</text></svg>'
+                            );
+                            quill.insertEmbed(range.index, 'image', placeholderSvg);
+                            quill.formatText(range.index, 1, { alt: placeholderId });
+                            quill.setSelection(range.index + 1);
+
+                            const formData = new FormData();
+                            formData.append('image', file);
+                            formData.append('_token', document.querySelector('input[name="_token"]').value);
+
+                            fetch('{{ route('admin.posts.upload-image') }}', { method: 'POST', body: formData, headers: { 'Accept': 'application/json' } })
+                                .then(res => {
+                                    if (!res.ok) return res.json().then(err => { throw err; });
+                                    return res.json();
+                                })
+                                .then(data => {
+                                    const img = quill.root.querySelector(`img[alt="${placeholderId}"]`);
+                                    if (img) { img.src = data.url; img.removeAttribute('alt'); }
+                                })
+                                .catch(err => {
+                                    const img = quill.root.querySelector(`img[alt="${placeholderId}"]`);
+                                    if (img) img.remove();
+                                    const msg = err?.errors?.image?.[0] || 'Could not upload that image. Try a smaller file.';
+                                    alert(msg);
+                                });
                         };
                     }
                 }
