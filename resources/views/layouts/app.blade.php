@@ -25,6 +25,14 @@
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
+        /* Tighter heading/paragraph spacing than Tailwind Typography's own
+           defaults -- kept byte-identical to admin/layout.blade.php's copy of
+           this block, so the editor (which wraps #quill-editor in the same
+           .prose classes) matches what a reader actually sees here. If you
+           change one, change the other. */
+        .prose :where(h1, h2, h3, h4) { margin-top: 1em !important; margin-bottom: 0.4em !important; }
+        .prose :where(p, ul, ol, blockquote, pre) { margin-top: 0.6em !important; margin-bottom: 0.6em !important; }
+        .prose > :first-child { margin-top: 0 !important; }
     </style>
 </head>
 <body class="bg-gray-50">

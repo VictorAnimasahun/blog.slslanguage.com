@@ -43,7 +43,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Content</label>
-                    <div id="quill-editor" class="bg-white" style="min-height: 320px;">{!! old('content') !!}</div>
+                    <div id="quill-editor" class="prose prose-lg max-w-none bg-white" style="min-height: 320px;">{!! old('content') !!}</div>
                     <textarea name="content" id="content-input" class="hidden @error('content') border-red-400 @enderror"></textarea>
                     @error('content')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -84,6 +84,10 @@
                     @enderror
                 </div>
 
+                <button type="button" onclick="openPreview()"
+                        class="w-full border border-blue-300 text-blue-600 py-2 rounded text-sm font-medium hover:bg-blue-50">
+                    <i class="fas fa-eye mr-1"></i> Preview
+                </button>
                 <button type="submit"
                         class="w-full bg-blue-600 text-white py-2 rounded text-sm font-medium hover:bg-blue-700">
                     Create Post
@@ -95,6 +99,9 @@
 
     </div>
 </form>
+
+@include('admin.posts.partials.preview-modal', ['existingFeaturedImageUrl' => null])
+
 @push('scripts')
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 <script>

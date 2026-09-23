@@ -7,8 +7,18 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Tighter heading/paragraph spacing than Tailwind Typography's own
+           defaults -- kept byte-identical to layouts/app.blade.php's copy of
+           this block, so the editor (here, wrapping #quill-editor in the
+           same .prose classes as the published page) matches what a reader
+           actually sees. If you change one, change the other. */
+        .prose :where(h1, h2, h3, h4) { margin-top: 1em !important; margin-bottom: 0.4em !important; }
+        .prose :where(p, ul, ol, blockquote, pre) { margin-top: 0.6em !important; margin-bottom: 0.6em !important; }
+        .prose > :first-child { margin-top: 0 !important; }
+    </style>
     @stack('head')
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
