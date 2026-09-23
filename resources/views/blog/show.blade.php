@@ -37,13 +37,6 @@
 				Comments ({{ $post->approvedComments->count() }})
 			</h3>
 
-			<!-- Success Message -->
-			@if(session('success'))
-				<div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6">
-					{{ session('success') }}
-				</div>
-			@endif
-
 			<!-- Comment Form -->
 			<div class="bg-gray-50 rounded-lg p-6 mb-8">
 				<h4 class="text-lg font-semibold mb-4">Leave a Comment</h4>
@@ -91,10 +84,13 @@
 						@enderror
 					</div>
 					
-					<button type="submit" 
+					<button type="submit"
 							class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition-colors">
 						Post Comment
 					</button>
+					@guest
+						<p class="text-xs text-gray-500 mt-2">We'll email you a link to confirm your address before your comment is sent for review.</p>
+					@endguest
 				</form>
 			</div>
 

@@ -7,7 +7,7 @@
 
 <!-- Filter tabs -->
 <div class="flex gap-1 mb-6 bg-white rounded-lg shadow p-1 w-fit">
-    @foreach(['pending' => 'Pending', 'approved' => 'Approved', 'spam' => 'Spam', 'all' => 'All'] as $key => $label)
+    @foreach(['unverified' => 'Unverified', 'pending' => 'Pending', 'approved' => 'Approved', 'spam' => 'Spam', 'all' => 'All'] as $key => $label)
         <a href="{{ route('admin.comments.index', ['status' => $key]) }}"
            class="px-4 py-1.5 rounded text-sm font-medium transition
                {{ $status === $key ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
@@ -58,14 +58,18 @@
                 <td class="px-5 py-3">
                     <span class="px-2 py-0.5 rounded text-xs font-medium
                         {{ $comment->status === 'approved' ? 'bg-green-100 text-green-700' :
-                           ($comment->status === 'spam' ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-700') }}">
+                           ($comment->status === 'spam' ? 'bg-red-100 text-red-600' :
+                           ($comment->status === 'unverified' ? 'bg-gray-100 text-gray-500' : 'bg-yellow-100 text-yellow-700')) }}">
                         {{ $comment->status }}
                     </span>
+                    @if($comment->status === 'unverified')
+                        <p class="text-gray-400 text-xs mt-1">Waiting on the commenter to confirm their email</p>
+                    @endif
                 </td>
                 <td class="px-5 py-3 text-gray-400 whitespace-nowrap">{{ $comment->created_at->format('M j, Y') }}</td>
                 <td class="px-5 py-3">
                     <div class="flex gap-3 flex-wrap">
-                        @if($comment->status !== 'approved')
+                        @if($comment->status !== 'approved' && $comment->status !== 'unverified')
                             <form method="POST" action="{{ route('admin.comments.approve', $comment) }}">
                                 @csrf @method('PATCH')
                                 <button class="text-green-600 hover:underline text-xs">Approve</button>

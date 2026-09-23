@@ -84,6 +84,19 @@
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 py-8">
+        {{-- Flash messages shown here once for every public page (not just blog/show) --
+             comment-verification links redirect to blog.index on an invalid/reused token,
+             and that page previously had no way to display the "why" at all. --}}
+        @if(session('success'))
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
+                {{ session('error') }}
+            </div>
+        @endif
         @yield('content')
     </div>
 

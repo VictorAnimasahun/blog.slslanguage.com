@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CommentVerificationMail;
 use App\Models\Post;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
@@ -100,27 +103,53 @@ class BlogController extends Controller
             ->where('status', 'published')
             ->firstOrFail();
 
+        // required_without:user_id used to be checked against a 'user_id' REQUEST
+        // field -- which the form never sends (it's derived from Auth::id(), not
+        // submitted by the client) -- so guest_name/guest_email were "required"
+        // even when logged in, where the form doesn't show those fields at all.
+        // Logged-in comments have silently failed validation ever since (caught
+        // while testing the new guest-verification flow below). Checking the
+        // actual auth state instead of a request field fixes both paths.
+        $guestRule = Auth::check() ? 'nullable' : 'required';
         $validated = $request->validate([
             'content'     => 'required|min:10|max:2000',
-            'guest_name'  => 'required_without:user_id|string|max:100|nullable',
-            'guest_email' => 'required_without:user_id|email|max:100|nullable',
+            'guest_name'  => "$guestRule|string|max:100",
+            'guest_email' => "$guestRule|email|max:100",
         ], [
-            'content.min'                  => 'Your comment should be at least 10 characters long.',
-            'guest_name.required_without'  => 'Please enter your name (required for guests).',
-            'guest_email.required_without' => 'Please enter a valid email (required for guests).',
-            'guest_email.email'            => 'Please provide a valid email address.',
+            'content.min'          => 'Your comment should be at least 10 characters long.',
+            'guest_name.required'  => 'Please enter your name.',
+            'guest_email.required' => 'Please enter a valid email.',
+            'guest_email.email'    => 'Please provide a valid email address.',
         ]);
 
-        $post->comments()->create([
-            'user_id'     => Auth::id(),
-            'guest_name'  => $validated['guest_name']  ?? null,
-            'guest_email' => $validated['guest_email'] ?? null,
-            'content'     => $validated['content'],
-            'status'      => 'pending',
-            'ip_address'  => $request->ip(),
+        // Logged-in users already have a real account on file -- only guests
+        // need their email confirmed before a comment enters the moderation
+        // queue. A guest comment starts 'unverified' with no expiry on the
+        // token; it simply never becomes visible until the link is clicked.
+        if (Auth::check()) {
+            $post->comments()->create([
+                'user_id'            => Auth::id(),
+                'content'            => $validated['content'],
+                'status'             => 'pending',
+                'email_verified_at'  => now(),
+                'ip_address'         => $request->ip(),
+            ]);
+
+            return back()->with('success', 'Thank you! Your comment has been submitted and is awaiting moderation.');
+        }
+
+        $comment = $post->comments()->create([
+            'guest_name'          => $validated['guest_name'],
+            'guest_email'         => $validated['guest_email'],
+            'content'             => $validated['content'],
+            'status'              => 'unverified',
+            'verification_token'  => Str::random(40),
+            'ip_address'          => $request->ip(),
         ]);
 
-        return back()->with('success', 'Thank you! Your comment has been submitted and is awaiting moderation.');
+        Mail::to($comment->guest_email)->send(new CommentVerificationMail($comment));
+
+        return back()->with('success', 'Almost done -- check your email and click the confirmation link to submit your comment for review.');
     }
 
     private function getArchives(): \Illuminate\Support\Collection

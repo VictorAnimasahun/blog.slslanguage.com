@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CommentVerificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,9 @@ require __DIR__.'/auth.php';
 Route::post('/blog/{slug}/comment', [BlogController::class, 'storeComment'])
     ->name('blog.comment.store')
     ->middleware('throttle:5,1');
+
+Route::get('/comments/verify/{token}', [CommentVerificationController::class, 'verify'])
+    ->name('comments.verify');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

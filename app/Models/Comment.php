@@ -16,11 +16,14 @@ class Comment extends Model
         'guest_email',
         'content',
         'status',
-        'ip_address'
+        'ip_address',
+        'verification_token',
+        'email_verified_at',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
+        'email_verified_at' => 'datetime',
     ];
 
     // Relationships
@@ -49,6 +52,11 @@ class Comment extends Model
     public function isApproved()
     {
         return $this->status === 'approved';
+    }
+
+    public function isVerified()
+    {
+        return $this->email_verified_at !== null;
     }
 
     public function getAuthorNameAttribute()

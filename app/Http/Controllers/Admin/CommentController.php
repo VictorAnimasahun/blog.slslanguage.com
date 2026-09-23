@@ -18,10 +18,11 @@ class CommentController extends Controller
             ->paginate(25);
 
         $counts = [
-            'pending'  => Comment::where('status', 'pending')->count(),
-            'approved' => Comment::where('status', 'approved')->count(),
-            'spam'     => Comment::where('status', 'spam')->count(),
-            'all'      => Comment::count(),
+            'unverified' => Comment::where('status', 'unverified')->count(),
+            'pending'    => Comment::where('status', 'pending')->count(),
+            'approved'   => Comment::where('status', 'approved')->count(),
+            'spam'       => Comment::where('status', 'spam')->count(),
+            'all'        => Comment::count(),
         ];
 
         return view('admin.comments.index', compact('comments', 'status', 'counts'));
