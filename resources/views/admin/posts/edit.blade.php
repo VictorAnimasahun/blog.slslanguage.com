@@ -104,13 +104,19 @@
 
             <div class="bg-white rounded-lg shadow p-5">
                 <p class="text-xs text-gray-400 mb-3">Danger zone</p>
-                <form method="POST" action="{{ route('admin.posts.destroy', $post) }}"
-                      onsubmit="return confirm('Permanently delete this post and all its comments?')">
-                    @csrf @method('DELETE')
-                    <button class="w-full border border-red-300 text-red-500 py-2 rounded text-sm hover:bg-red-50">
-                        Delete Post
-                    </button>
-                </form>
+                <!-- Not a real <form> here on purpose: this sits inside the "Save Changes"
+                     form above (post-form), and a form nested inside another form is invalid
+                     HTML. Browsers "fix" that by dropping the inner <form> tag but keeping its
+                     hidden inputs as siblings inside the outer one -- so a click on "Save
+                     Changes" was also submitting this block's own hidden @method('DELETE')
+                     field, and PHP's "last value with the same name wins" rule meant the
+                     PUT above got silently overridden by that DELETE, deleting the post
+                     instead of updating it. (Reproduced and confirmed 2026-09-23.) Submitting
+                     a form built and appended to <body> in JS can never nest, so it's safe. -->
+                <button type="button" onclick="deletePost()"
+                        class="w-full border border-red-300 text-red-500 py-2 rounded text-sm hover:bg-red-50">
+                    Delete Post
+                </button>
             </div>
         </div>
 
@@ -186,6 +192,18 @@
     document.getElementById('post-form').addEventListener('submit', function () {
         document.getElementById('content-input').value = quill.root.innerHTML;
     });
+
+    // Builds and submits its own detached form (never a descendant of post-form,
+    // so it can never repeat the nested-form bug described above).
+    function deletePost() {
+        if (!confirm('Permanently delete this post and all its comments?')) return;
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route('admin.posts.destroy', $post) }}';
+        form.innerHTML = `@csrf @method('DELETE')`;
+        document.body.appendChild(form);
+        form.submit();
+    }
 </script>
 @endpush
 
