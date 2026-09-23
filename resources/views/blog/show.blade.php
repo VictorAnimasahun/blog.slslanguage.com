@@ -4,9 +4,12 @@
 @section('meta_description', $post->excerpt ?? Str::limit(strip_tags($post->content), 155))
 
 @section('content')
-<div class="grid grid-cols-3 gap-8">
+<!-- Mobile: stacked, sidebar first. Desktop: 2:1 grid. Same pattern as blog/index.blade.php:
+     this page was missing the "grid-cols-1 lg:" breakpoint, so it forced a 3-column grid at
+     every width, squeezing both the article and the sidebar on anything narrower than 1024px. -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Main Content -->
-    <div class="col-span-2 bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="lg:col-span-2 order-2 lg:order-1 bg-white rounded-lg shadow-sm overflow-hidden">
         @if($post->featured_image)
             <img src="{{ Storage::url($post->featured_image) }}" alt="{{ $post->title }}"
                  class="w-full h-72 object-cover">
@@ -121,7 +124,7 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="col-span-1">
+    <div class="lg:col-span-1 order-1 lg:order-2">
         <!-- Post Info -->
         <div class="bg-white p-6 rounded-lg shadow-sm mb-6">
             <h3 class="section-title font-bold text-lg">Post Info</h3>
