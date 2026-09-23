@@ -18,10 +18,26 @@
         .prose :where(h1, h2, h3, h4) { margin-top: 1em !important; margin-bottom: 0.4em !important; }
         .prose :where(p, ul, ol, blockquote, pre) { margin-top: 0.6em !important; margin-bottom: 0.6em !important; }
         .prose > :first-child { margin-top: 0 !important; }
+        /* <main> scrolls independently of the sidebar (see .overflow-auto below), so on
+           macOS/trackpads with auto-hiding overlay scrollbars it was easy not to notice
+           the page could scroll at all -- writers didn't realize there was more below
+           (or a way back up) until they happened to swipe. Forces a plain, always-visible
+           scrollbar instead of relying on the OS's fade-in-when-scrolling default. */
+        main.overflow-auto { scrollbar-width: auto; scrollbar-color: #94a3b8 #f1f5f9; }
+        main.overflow-auto::-webkit-scrollbar { width: 14px; }
+        main.overflow-auto::-webkit-scrollbar-track { background: #f1f5f9; }
+        main.overflow-auto::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 7px; border: 3px solid #f1f5f9; }
     </style>
     @stack('head')
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<!-- h-screen + overflow-hidden (was min-h-screen, which only sets a floor, not a
+     ceiling): without a real height cap here, <main>'s own overflow-auto never
+     actually engaged -- the whole PAGE grew taller and scrolled instead, taking
+     the header, sidebar, and the post editor's toolbar along with it. That's why
+     a sticky toolbar (and a visible scrollbar on the right container) didn't
+     work until this line changed -- confirmed by scrolling a real page before
+     and after. -->
+<body class="bg-gray-100 h-screen overflow-hidden flex flex-col">
 
     <!-- Top bar -->
     <header class="bg-gray-900 text-white flex items-center justify-between px-6 py-3 shadow">
@@ -41,9 +57,9 @@
         </div>
     </header>
 
-    <div class="flex flex-1">
+    <div class="flex flex-1 min-h-0">
         <!-- Sidebar -->
-        <aside class="w-56 bg-gray-800 text-white flex flex-col py-6 shrink-0">
+        <aside class="w-56 bg-gray-800 text-white flex flex-col py-6 shrink-0 overflow-y-auto">
             <nav class="space-y-1 px-3">
                 <a href="{{ route('admin.dashboard') }}"
                    class="flex items-center gap-3 px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('admin.dashboard') ? 'bg-blue-600' : 'hover:bg-gray-700' }}">
@@ -75,7 +91,7 @@
         </aside>
 
         <!-- Content -->
-        <main class="flex-1 p-8 overflow-auto">
+        <main class="flex-1 min-h-0 p-8 overflow-auto">
             @if(session('success'))
                 <div class="mb-4 bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded flex items-center justify-between">
                     <span>{{ session('success') }}</span>

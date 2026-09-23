@@ -2,6 +2,16 @@
 
 @push('head')
 <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+<style>
+    /* Toolbar stays on screen while scrolling a long post, instead of only
+       being reachable by scrolling back to the very top. */
+    .ql-toolbar.ql-snow {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: #fff;
+    }
+</style>
 @endpush
 
 @section('title', 'Edit Post')
@@ -133,10 +143,15 @@
 
 @push('scripts')
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
 <script>
+    // Drag the handles on an inline image to resize it right in the post.
+    Quill.register('modules/imageResize', ImageResize.default);
+
     const quill = new Quill('#quill-editor', {
         theme: 'snow',
         modules: {
+            imageResize: { modules: ['Resize', 'DisplaySize'] },
             toolbar: {
                 container: [
                     [{ header: [1, 2, 3, false] }],
