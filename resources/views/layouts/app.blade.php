@@ -63,8 +63,8 @@
     <nav class="sls-nav">
         <div class="max-w-7xl mx-auto px-4 flex gap-8 items-center">
             <a href="{{ route('blog.index') }}" class="text-white py-4 hover:bg-blue-600 px-3">Home</a>
-            <a href="#" class="text-white py-4 hover:bg-blue-600 px-3">About</a>
-            <a href="#" class="text-white py-4 hover:bg-blue-600 px-3">Contact</a>
+            <a href="https://slslanguage.com/pages/AboutSLS/about_home.html" class="text-white py-4 hover:bg-blue-600 px-3">About</a>
+            <a href="https://slslanguage.com/#contact" class="text-white py-4 hover:bg-blue-600 px-3">Contact</a>
             <div class="ml-auto flex gap-2">
                 @auth
                     @if(in_array(auth()->user()->role, ['admin', 'author']))
