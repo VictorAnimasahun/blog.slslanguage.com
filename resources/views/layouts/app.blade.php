@@ -30,7 +30,7 @@
 <body class="bg-gray-50">
     <!-- Header -->
     <div class="sls-header py-6">
-        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center text-white font-bold">
                     SLS
@@ -53,7 +53,7 @@
 
     <!-- Navigation -->
     <nav class="sls-nav">
-        <div class="max-w-6xl mx-auto px-4 flex gap-8 items-center">
+        <div class="max-w-7xl mx-auto px-4 flex gap-8 items-center">
             <a href="{{ route('blog.index') }}" class="text-white py-4 hover:bg-blue-600 px-3">Home</a>
             <a href="#" class="text-white py-4 hover:bg-blue-600 px-3">About</a>
             <a href="#" class="text-white py-4 hover:bg-blue-600 px-3">Contact</a>
@@ -75,13 +75,13 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="max-w-7xl mx-auto px-4 py-8">
         @yield('content')
     </div>
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-8 mt-12">
-        <div class="max-w-6xl mx-auto px-4 text-center">
+        <div class="max-w-7xl mx-auto px-4 text-center">
             <p>&copy; 2026 Scholarly Language Services. All rights reserved.</p>
         </div>
     </footer>

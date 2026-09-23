@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-6xl mx-auto">
+<div class="max-w-7xl mx-auto">
     <!-- Mobile: Show sidebar at top, Desktop: Grid layout -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
         
-        <!-- Main Content - Full width on mobile, 2 cols on desktop -->
-        <div class="lg:col-span-2 order-2 lg:order-1">
+        <!-- Main Content - Full width on mobile, 3 of 4 cols on desktop -->
+        <div class="lg:col-span-3 order-2 lg:order-1">
             @forelse($posts as $post)
                 <div class="bg-white rounded-lg shadow-md mb-6 hover:shadow-lg transition-shadow overflow-hidden">
                     @if($post->featured_image)
@@ -49,7 +49,7 @@
             </div>
         </div>
 
-        <!-- Sidebar - Full width on mobile (shows first), 1 col on desktop -->
+        <!-- Sidebar - Full width on mobile (shows first), 1 of 4 cols on desktop -->
         <div class="lg:col-span-1 order-1 lg:order-2">
             
             <!-- Search Widget -->
