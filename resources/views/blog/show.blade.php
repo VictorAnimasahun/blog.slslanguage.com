@@ -17,8 +17,8 @@
         <h1 class="text-4xl font-bold mb-4">{{ $post->title }}</h1>
         
         <p class="text-gray-600 text-sm mb-8">
-            Posted on {{ $post->published_at->format('F j, Y') }} by 
-            <span class="text-pink-600 font-semibold">{{ $post->author->display_name }}</span>
+            Posted on {{ $post->published_at->format('F j, Y') }} by
+            <span class="text-pink-600 font-semibold">{{ $post->author->display_name }}</span> for SLS Admin
             in <a href="{{ route('blog.category', $post->category->slug) }}" class="text-blue-600 hover:underline">{{ $post->category->name }}</a>
         </p>
 
@@ -124,7 +124,7 @@
         <div class="bg-white p-6 rounded-lg shadow-sm mb-6">
             <h3 class="section-title font-bold text-lg">Post Info</h3>
             <p class="text-gray-700 mb-3">
-                <strong>Author:</strong> {{ $post->author->display_name }}
+                <strong>Author:</strong> {{ $post->author->display_name }} for SLS Admin
             </p>
             <p class="text-gray-700 mb-3">
                 <strong>Category:</strong> 
