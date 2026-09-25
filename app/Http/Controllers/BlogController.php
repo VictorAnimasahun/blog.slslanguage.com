@@ -97,6 +97,39 @@ class BlogController extends Controller
             ->with('searchQuery', $archiveLabel);
     }
 
+    /**
+     * Public JSON feed of the latest published posts, consumed by the main
+     * site's homepage so it only ever shows real posts (it used to carry
+     * hardcoded placeholder cards). CORS is limited to the main site's own
+     * origins -- this is read-only public data, but there's no reason to
+     * offer it to every origin.
+     */
+    public function latestJson(Request $request)
+    {
+        $posts = Post::where('status', 'published')
+            ->whereNotNull('published_at')
+            ->with('author')
+            ->orderByDesc('published_at')
+            ->limit(min((int) $request->query('limit', 3), 6))
+            ->get()
+            ->map(fn ($p) => [
+                'title'    => $p->title,
+                'url'      => route('blog.show', $p->slug),
+                'excerpt'  => $p->excerpt ?: \Illuminate\Support\Str::limit(trim(preg_replace('/\s+/', ' ', strip_tags($p->content))), 160),
+                'date'     => $p->published_at->format('F j, Y'),
+                'author'   => $p->author->display_name ?? null,
+                'image'    => $p->featured_image ? url(\Illuminate\Support\Facades\Storage::url($p->featured_image)) : null,
+            ]);
+
+        $origin = $request->headers->get('Origin');
+        $allowed = ['https://slslanguage.com', 'https://www.slslanguage.com', 'http://localhost:8888', 'http://localhost'];
+
+        return response()->json(['posts' => $posts])
+            ->header('Access-Control-Allow-Origin', in_array($origin, $allowed, true) ? $origin : 'https://slslanguage.com')
+            ->header('Vary', 'Origin')
+            ->header('Cache-Control', 'public, max-age=300');
+    }
+
     public function storeComment(Request $request, string $slug)
     {
         $post = Post::where('slug', $slug)

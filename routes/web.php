@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::get('/category/{slug}', [BlogController::class, 'category'])->name('blog.category');
+Route::get('/latest-posts.json', [BlogController::class, 'latestJson'])->name('blog.latest-json')
+    ->withoutMiddleware([
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+    ]);
 Route::get('/search', [BlogController::class, 'search'])->name('blog.search');
 Route::get('/archive/{year}/{month}', [BlogController::class, 'archive'])->name('blog.archive');
 
