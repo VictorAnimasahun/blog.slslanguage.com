@@ -19,7 +19,9 @@
         <p class="text-gray-600 text-sm mb-8">
             Posted on {{ $post->published_at->format('F j, Y') }} by
             <span class="text-pink-600 font-semibold">{{ $post->author->display_name }}</span>
-            in <a href="{{ route('blog.category', $post->category->slug) }}" class="text-blue-600 hover:underline">{{ $post->category->name }}</a>
+            @if($post->category)
+                in <a href="{{ route('blog.category', $post->category->slug) }}" class="text-blue-600 hover:underline">{{ $post->category->name }}</a>
+            @endif
         </p>
 
         <div class="prose prose-lg max-w-none mb-8">
@@ -126,12 +128,14 @@
             <p class="text-gray-700 mb-3">
                 <strong>Author:</strong> {{ $post->author->display_name }}
             </p>
-            <p class="text-gray-700 mb-3">
-                <strong>Category:</strong> 
-                <a href="{{ route('blog.category', $post->category->slug) }}" class="text-blue-600">
-                    {{ $post->category->name }}
-                </a>
-            </p>
+            @if($post->category)
+                <p class="text-gray-700 mb-3">
+                    <strong>Category:</strong>
+                    <a href="{{ route('blog.category', $post->category->slug) }}" class="text-blue-600">
+                        {{ $post->category->name }}
+                    </a>
+                </p>
+            @endif
             <p class="text-gray-700">
                 <strong>Published:</strong> {{ $post->published_at->format('F j, Y') }}
             </p>

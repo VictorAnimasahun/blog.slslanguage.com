@@ -10,7 +10,7 @@ class EditorMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::check() || !in_array(Auth::user()->role, ['admin', 'author'])) {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['admin', 'editor', 'author'])) {
             abort(403, 'Editor access required.');
         }
 

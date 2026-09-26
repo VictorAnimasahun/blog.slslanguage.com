@@ -3,7 +3,9 @@
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Mail\CommentVerificationMail;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 // --- Public blog routes ---
 
@@ -75,7 +77,8 @@ it('archives posts by month and year', function () {
 
 // --- Comments ---
 
-it('allows a guest to submit a comment', function () {
+it('holds a guest comment as unverified and emails a confirmation link', function () {
+    Mail::fake();
     $user = User::factory()->create();
     $post = Post::factory()->create([
         'status'       => 'published',
@@ -90,6 +93,34 @@ it('allows a guest to submit a comment', function () {
     ])->assertRedirect();
 
     expect(Comment::where('post_id', $post->id)->count())->toBe(1);
+    expect(Comment::first()->status)->toBe('unverified');
+    expect(Comment::first()->verification_token)->not->toBeNull();
+    Mail::assertSent(CommentVerificationMail::class);
+    // not visible to readers until confirmed
+    $this->get(route('blog.show', $post->slug))->assertDontSee('This is a great post, thank you!');
+});
+
+it('moves a guest comment to pending once the email link is clicked, and the link works only once', function () {
+    Mail::fake();
+    $user = User::factory()->create();
+    $post = Post::factory()->create(['status' => 'published', 'published_at' => now(), 'author_id' => $user->id]);
+    $this->post(route('blog.comment.store', $post->slug), [
+        'content' => 'A comment long enough to pass.', 'guest_name' => 'Jane', 'guest_email' => 'jane@example.com',
+    ]);
+    $token = Comment::first()->verification_token;
+
+    $this->get(route('comments.verify', $token))->assertRedirect(route('blog.show', $post->slug));
+    expect(Comment::first()->status)->toBe('pending');
+
+    $this->get(route('comments.verify', $token))->assertRedirect(route('blog.index'));
+});
+
+it('puts a logged-in user\'s comment straight into moderation', function () {
+    $user = User::factory()->create();
+    $post = Post::factory()->create(['status' => 'published', 'published_at' => now(), 'author_id' => $user->id]);
+
+    $this->actingAs($user)->post(route('blog.comment.store', $post->slug), ['content' => 'A logged in comment here.'])->assertRedirect();
+
     expect(Comment::first()->status)->toBe('pending');
 });
 
@@ -106,4 +137,11 @@ it('validates comment content length', function () {
         'guest_name'  => 'Jane',
         'guest_email' => 'jane@example.com',
     ])->assertSessionHasErrors('content');
+});
+
+it('shows a published post that has no category', function () {
+    $user = User::factory()->create();
+    $post = Post::factory()->create(['status' => 'published', 'published_at' => now(), 'author_id' => $user->id, 'category_id' => null]);
+
+    $this->get(route('blog.show', $post->slug))->assertOk()->assertSee($post->title);
 });
