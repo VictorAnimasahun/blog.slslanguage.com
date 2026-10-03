@@ -76,8 +76,12 @@ class BlogController extends Controller
         $categories = Category::orderBy('name')->get();
         $archives   = $this->getArchives();
 
+        $pageHeading = ($query !== null && trim($query) !== '')
+            ? 'Search results for "'.$query.'"'
+            : 'Search';
+
         return view('blog.index', compact('posts', 'categories', 'archives'))
-            ->with('searchQuery', $query);
+            ->with('pageHeading', $pageHeading);
     }
 
     public function archive($year, $month)
@@ -94,7 +98,7 @@ class BlogController extends Controller
         $archiveLabel = \Carbon\Carbon::createFromDate($year, $month, 1)->format('F Y');
 
         return view('blog.index', compact('posts', 'categories', 'archives'))
-            ->with('searchQuery', $archiveLabel);
+            ->with('pageHeading', 'Archive: '.$archiveLabel);
     }
 
     /**

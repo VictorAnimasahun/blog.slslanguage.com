@@ -18,7 +18,8 @@ Route::get('/latest-posts.json', [BlogController::class, 'latestJson'])->name('b
         \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
     ]);
 Route::get('/search', [BlogController::class, 'search'])->name('blog.search');
-Route::get('/archive/{year}/{month}', [BlogController::class, 'archive'])->name('blog.archive');
+Route::get('/archive/{year}/{month}', [BlogController::class, 'archive'])->name('blog.archive')
+    ->where(['year' => '[0-9]{4}', 'month' => '0?[1-9]|1[0-2]']);
 
 require __DIR__.'/auth.php';
 

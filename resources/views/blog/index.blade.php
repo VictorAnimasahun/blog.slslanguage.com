@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', $pageHeading ?? 'SLS Blog')
+
 @section('content')
 <div class="max-w-7xl mx-auto">
     <!-- Mobile: Show sidebar at top, Desktop: Grid layout -->
@@ -7,6 +9,9 @@
         
         <!-- Main Content - Full width on mobile, 3 of 4 cols on desktop -->
         <div class="lg:col-span-3 order-2 lg:order-1">
+            @isset($pageHeading)
+                <h1 class="text-xl md:text-2xl font-bold mb-6 text-gray-800">{{ $pageHeading }}</h1>
+            @endisset
             @forelse($posts as $post)
                 <div class="bg-white rounded-lg shadow-md mb-6 hover:shadow-lg transition-shadow overflow-hidden">
                     @if($post->featured_image)

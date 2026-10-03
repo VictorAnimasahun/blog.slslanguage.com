@@ -49,7 +49,7 @@
                 </div>
             </div>
             <div class="flex gap-3">
-                <a href="#" class="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center text-white hover:bg-blue-500">
+                <a href="https://web.facebook.com/profile.php?id=61572546444418" target="_blank" rel="noopener" class="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center text-white hover:bg-blue-500">
                     <i class="fab fa-facebook"></i>
                 </a>
                 <a href="#" class="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center text-white hover:bg-blue-500">
